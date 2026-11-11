@@ -15,10 +15,10 @@
  },
  {
   "capability": "records",
-  "source": "categories, catalogs, catalog_chunks, catalog_profiles in old Lovable Cloud DB",
+  "source": "old backend public API (4 categories, 55 catalogs, 2534 chunks); embeddings+profiles regenerated",
   "outcome": "migrate",
-  "status": "pending",
-  "next_action": "user exports CSV of 4 tables from old project"
+  "status": "done",
+  "next_action": ""
  },
  {
   "capability": "auth identities",
@@ -57,9 +57,9 @@
  },
  {
   "capability": "verification",
-  "source": "",
+  "source": "home lists catalogs; assistant answered FIDUS capacity, inverter-by-function, Solis 50K MPPT",
   "outcome": "migrate",
-  "status": "partial",
-  "next_action": "tests pass, home+admin render; verify catalog view + assistant answers after records import"
+  "status": "verified",
+  "next_action": ""
  }
 ]
