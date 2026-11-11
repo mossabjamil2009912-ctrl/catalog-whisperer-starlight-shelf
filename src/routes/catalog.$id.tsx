@@ -1,4 +1,5 @@
 import { shareLink } from "@/components/ShareSheet";
+import { catalogUrl } from "@/lib/site-url";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Download, ExternalLink, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/catalog/$id")({
 function CatalogPage() {
   const c = Route.useLoaderData();
   const share = async () => {
-    const url = window.location.href;
+    const url = catalogUrl(c.id);
     await shareLink(c.title, url);
   };
   return (

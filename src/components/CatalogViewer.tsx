@@ -1,4 +1,5 @@
 import { shareLink } from "@/components/ShareSheet";
+import { catalogUrl } from "@/lib/site-url";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Download, ExternalLink, Loader2, Share2, X } from "lucide-react";
@@ -38,7 +39,7 @@ export function CatalogViewer({ id, cover, onClose }: { id: string | null; cover
   if (!id) return null;
 
   const share = async () => {
-    const url = `${window.location.origin}/catalog/${id}`;
+    const url = catalogUrl(id);
     await shareLink(c?.title ?? "كتالوج", url);
   };
 
