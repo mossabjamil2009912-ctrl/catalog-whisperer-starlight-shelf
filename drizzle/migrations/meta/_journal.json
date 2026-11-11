@@ -8,6 +8,13 @@
       "when": 1794429425632,
       "tag": "0000_import_catalog_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794430071959,
+      "tag": "0001_grant_catalog_access",
+      "breakpoints": true
     }
   ]
 }
