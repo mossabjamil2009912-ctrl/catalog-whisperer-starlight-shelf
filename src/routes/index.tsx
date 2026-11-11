@@ -1,4 +1,6 @@
 import { shareLink } from "@/components/ShareSheet";
+import { PublishUrlSettings } from "@/components/PublishUrlSettings";
+import { catalogUrl } from "@/lib/site-url";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -138,7 +140,8 @@ function Index() {
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-4 pb-28 pt-4">
-      <header className="mb-4 text-center">
+      <header className="relative mb-4 text-center">
+        <PublishUrlSettings />
         <img src={logo.url} alt="ACTES" className="mx-auto mb-4 h-14 w-auto object-contain sm:h-16" />
         <h1 className="text-3xl font-bold sm:text-4xl">
           مكتبة <span className="text-[#e85d3a]">الكتالوجات</span>
@@ -216,7 +219,7 @@ function Index() {
 }
 
 async function shareCatalog(id: string, title: string) {
-  const url = `${window.location.origin}/catalog/${id}`;
+  const url = catalogUrl(id);
   await shareLink(title, url);
 }
 
