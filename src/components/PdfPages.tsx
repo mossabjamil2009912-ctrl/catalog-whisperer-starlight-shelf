@@ -16,6 +16,7 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
     let doc: { destroy: () => Promise<void> } | null = null;
     const tasks: { cancel: () => void }[] = [];
     const observers: IntersectionObserver[] = [];
+    let waiting = false;
 
     const box = ref.current;
     if (!box) return;
@@ -30,7 +31,7 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
         try {
           data = await loadPdfBytes(id, url);
         } catch (e) {
-          if (!url) return; // cloud-stored catalog: wait for its link
+          if (!url) { waiting = true; return; } // cloud-stored catalog: wait for its link
           throw e;
         }
         const [pdfjs, workerMod] = await libs;
@@ -98,13 +99,13 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
             const i = Number((e.target as HTMLElement).dataset["i"]);
             draw(i, quick).then(() => draw(i, sharp));
           }
-        }, { root: box.parentElement, rootMargin: "1200px 0px" });
+        }, { rootMargin: "1200px 0px" });
         canvases.forEach((c) => io.observe(c));
         observers.push(io);
       } catch {
         if (!cancelled) setError(true);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waiting) setLoading(false);
       }
     })();
     return () => {
