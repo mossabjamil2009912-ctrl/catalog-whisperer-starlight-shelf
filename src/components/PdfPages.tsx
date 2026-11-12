@@ -21,6 +21,8 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
     box.innerHTML = "";
     setLoading(true);
     setError(false);
+    // Wait for the file link (cloud-stored catalogs get it a moment later).
+    if (!url) return;
     (async () => {
       try {
         const [pdfjs, workerMod, data] = await Promise.all([
@@ -96,7 +98,7 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
       doc?.destroy().catch(() => {});
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, url]);
 
   return (
     <div className="h-full overflow-y-auto overscroll-contain p-2">
