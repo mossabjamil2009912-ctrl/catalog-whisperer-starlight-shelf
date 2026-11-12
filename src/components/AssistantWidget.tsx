@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { ArrowUp, X, Loader2, Mic, Square, Volume2 } from "lucide-react";
 import { askAssistant } from "@/lib/catalog.functions";
 import { speakable } from "@/lib/speakable";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 const logo = { url: "/actes-logo.png" };
 
 type Msg = { role: "user" | "assistant"; content: string; sources?: { id: string; title: string }[] };
@@ -273,11 +275,17 @@ export function AssistantWidget() {
             {msgs.map((m, i) => (
               <div key={i} className={m.role === "user" ? "flex justify-start" : "flex justify-end"}>
                 <div
-                  className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm leading-relaxed ${
+                  className={`max-w-[92%] animate-in fade-in slide-in-from-bottom-2 duration-300 rounded-2xl px-4 py-2 text-sm leading-relaxed ${
                     m.role === "user" ? "bg-primary text-primary-foreground" : "bg-white text-[#1f1f22] shadow-sm"
                   }`}
                 >
-                  {m.content}
+                  {m.role === "assistant" ? (
+                    <div className="assistant-md">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <span className="whitespace-pre-wrap">{m.content}</span>
+                  )}
                   {m.role === "assistant" && i > 0 && (
                     <button
                       type="button"
