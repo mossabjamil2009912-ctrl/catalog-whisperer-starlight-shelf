@@ -139,3 +139,9 @@ body[data-viewer="open"] .assistant-fab { display: none; }
 .assistant-md tbody tr { animation: md-row 0.4s ease both; }
 .assistant-md tbody tr:nth-child(2) { animation-delay: .05s } .assistant-md tbody tr:nth-child(3) { animation-delay: .1s } .assistant-md tbody tr:nth-child(4) { animation-delay: .15s } .assistant-md tbody tr:nth-child(n+5) { animation-delay: .2s }
 @keyframes md-row { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+#lovable-badge {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
