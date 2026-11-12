@@ -124,3 +124,18 @@ body[data-viewer="open"] .assistant-fab { display: none; }
   pointer-events: none !important;
   opacity: 0 !important;
 }
+
+.assistant-md { line-height: 1.7; }
+.assistant-md > * + * { margin-top: 0.5rem; }
+.assistant-md strong { color: #1e3a5f; font-weight: 700; }
+.assistant-md h3 { font-weight: 700; font-size: 0.95rem; color: #1e3a5f; }
+.assistant-md ol { list-style: decimal; padding-inline-start: 1.25rem; }
+.assistant-md ul { list-style: disc; padding-inline-start: 1.25rem; }
+.assistant-md li + li { margin-top: 0.25rem; }
+.assistant-md table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.8rem; border: 1px solid #d5dbe5; border-radius: 0.6rem; overflow: hidden; display: block; overflow-x: auto; }
+.assistant-md th { background: linear-gradient(to left, #1e3a5f, #2b5480); color: #fff; font-weight: 600; padding: 0.4rem 0.6rem; text-align: start; white-space: nowrap; }
+.assistant-md td { padding: 0.4rem 0.6rem; border-top: 1px solid #e6eaf0; }
+.assistant-md tr:nth-child(even) td { background: #f4f6fa; }
+.assistant-md tbody tr { animation: md-row 0.4s ease both; }
+.assistant-md tbody tr:nth-child(2) { animation-delay: .05s } .assistant-md tbody tr:nth-child(3) { animation-delay: .1s } .assistant-md tbody tr:nth-child(4) { animation-delay: .15s } .assistant-md tbody tr:nth-child(n+5) { animation-delay: .2s }
+@keyframes md-row { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
