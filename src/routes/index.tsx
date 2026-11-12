@@ -80,6 +80,7 @@ function pairUp<T extends { id: string; title: string; language: string }>(list:
 }
 
 function Index() {
+  const MANUAL = "User Manual";
   const BRANDS = [
     { name: "Suntech", terms: ["suntech", "سانتك"] },
     { name: "Li Power", terms: ["li power", "لي باور", "bz4024"] },
@@ -121,7 +122,10 @@ function Index() {
   const results = useMemo(() => {
     let list = data.catalogs;
     const brand = BRANDS.find((b) => b.name === cat);
-    if (brand) {
+    if (cat === MANUAL) {
+      const mid = data.categories.find((x) => x.name === MANUAL)?.id;
+      list = list.filter((c) => c.category_id === mid);
+    } else if (brand) {
       list = list.filter((c) => {
         const hay = `${c.title} ${c.keywords}`.toLowerCase();
         return brand.terms.some((t) => hay.includes(t));
@@ -166,6 +170,7 @@ function Index() {
             {b.name}
           </Chip>
         ))}
+        <Chip active={cat === MANUAL} onClick={() => setCat(MANUAL)}>{MANUAL}</Chip>
       </div>
 
 
