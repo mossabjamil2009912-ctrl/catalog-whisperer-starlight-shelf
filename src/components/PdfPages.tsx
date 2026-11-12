@@ -15,24 +15,28 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
     let cancelled = false;
     let doc: { destroy: () => Promise<void> } | null = null;
     const tasks: { cancel: () => void }[] = [];
+    const observers: IntersectionObserver[] = [];
+    let waiting = false;
 
     const box = ref.current;
     if (!box) return;
     box.innerHTML = "";
     setLoading(true);
     setError(false);
-    // Wait for the file link (cloud-stored catalogs get it a moment later).
-    if (!url) return;
     (async () => {
       try {
-        const [pdfjs, workerMod, data] = await Promise.all([
-          import("pdfjs-dist"),
-          import("pdfjs-dist/build/pdf.worker.min.mjs?url"),
-          loadPdfBytes(id, url),
-        ]);
+        // Start loading the file right away: bundled catalogs don't need the link at all.
+        let data: ArrayBuffer;
+        const libs = Promise.all([import("pdfjs-dist"), import("pdfjs-dist/build/pdf.worker.min.mjs?url")]);
+        try {
+          data = await loadPdfBytes(id, url);
+        } catch (e) {
+          if (!url) { waiting = true; return; } // cloud-stored catalog: wait for its link
+          throw e;
+        }
+        const [pdfjs, workerMod] = await libs;
         if (cancelled) return;
         pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default;
-        // Font helpers are bundled in the app: no internet wait (Arabic fonts needed these).
         const task = pdfjs.getDocument({
           data: new Uint8Array(data.slice(0)),
           cMapUrl: "/pdfjs/cmaps/",
@@ -46,54 +50,67 @@ export function PdfPages({ id, url, cover }: { id: string; url: string; cover?: 
         const pdf = await task.promise;
         if (cancelled) return;
         const width = box.clientWidth || 800;
-        const dpr = Math.min(window.devicePixelRatio || 1, 3);
-        const pages = await Promise.all(Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1)));
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const first = await pdf.getPage(1);
         if (cancelled) return;
-        const canvases = pages.map((page) => {
-          const b = page.getViewport({ scale: 1 });
+        const fb = first.getViewport({ scale: 1 });
+        const canvases = Array.from({ length: pdf.numPages }, (_, i) => {
           const canvas = document.createElement("canvas");
-          canvas.style.aspectRatio = `${b.width} / ${b.height}`;
+          canvas.style.aspectRatio = `${fb.width} / ${fb.height}`;
           canvas.className = "mb-2 block w-full rounded-lg bg-white shadow";
+          canvas.dataset["i"] = String(i);
           box.appendChild(canvas);
           return canvas;
         });
-        const draw = async (i: number, target: number) => {
-          const page = pages[i]!;
-          const b = page.getViewport({ scale: 1 });
-          const viewport = page.getViewport({ scale: target / b.width });
-          const off = document.createElement("canvas");
-          off.width = viewport.width;
-          off.height = viewport.height;
-          const t = page.render({ canvas: off, canvasContext: off.getContext("2d")!, viewport });
-          tasks.push(t);
-          await t.promise;
-          if (cancelled) return;
-          const c = canvases[i]!;
-          c.width = off.width;
-          c.height = off.height;
-          c.getContext("2d")!.drawImage(off, 0, 0);
+        const level = new Array<number>(pdf.numPages).fill(0);
+        let chain = Promise.resolve();
+        const draw = (i: number, target: number) => {
+          if (level[i]! >= target) return chain;
+          level[i] = target;
+          chain = chain.then(async () => {
+            if (cancelled) return;
+            const page = i === 0 ? first : await pdf.getPage(i + 1);
+            const b = page.getViewport({ scale: 1 });
+            const viewport = page.getViewport({ scale: target / b.width });
+            const off = document.createElement("canvas");
+            off.width = viewport.width;
+            off.height = viewport.height;
+            const t = page.render({ canvas: off, canvasContext: off.getContext("2d")!, viewport });
+            tasks.push(t);
+            await t.promise;
+            if (cancelled) return;
+            const c = canvases[i]!;
+            c.style.aspectRatio = `${b.width} / ${b.height}`;
+            c.width = off.width;
+            c.height = off.height;
+            c.getContext("2d")!.drawImage(off, 0, 0);
+          }).catch(() => {});
+          return chain;
         };
-        // 1) Fast pass at screen sharpness, one page after another (page 1 shows first).
-        const quick = Math.min(Math.max(width * dpr, 900), 1400);
-        for (let i = 0; i < pages.length; i++) {
-          await draw(i, quick);
-          if (cancelled) return;
-          if (i === 0) setLoading(false);
-        }
-        // 2) Sharp pass for zooming, done quietly afterwards.
-        const sharp = Math.min(Math.max(width * dpr * 2.5, 1600), 2400);
-        for (let i = 0; i < pages.length; i++) {
-          await draw(i, sharp);
-          if (cancelled) return;
-        }
+        const quick = Math.min(Math.max(width * dpr, 800), 1300);
+        const sharp = Math.min(Math.max(width * dpr * 2, 1600), 2200);
+        await draw(0, quick);
+        if (cancelled) return;
+        setLoading(false);
+        // Other pages render only when scrolled near; sharper copy after they settle.
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const i = Number((e.target as HTMLElement).dataset["i"]);
+            draw(i, quick).then(() => draw(i, sharp));
+          }
+        }, { rootMargin: "1200px 0px" });
+        canvases.forEach((c) => io.observe(c));
+        observers.push(io);
       } catch {
         if (!cancelled) setError(true);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waiting) setLoading(false);
       }
     })();
     return () => {
       cancelled = true;
+      observers.forEach((o) => o.disconnect());
       tasks.forEach((t) => { try { t.cancel(); } catch {} });
       doc?.destroy().catch(() => {});
     };
