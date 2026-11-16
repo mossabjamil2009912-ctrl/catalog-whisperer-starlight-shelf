@@ -1,0 +1,20 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<style>body{margin:0;background:#525659}header{position:sticky;top:0;background:#1e3a5f;color:#fff;padding:10px 12px;font:15px system-ui;display:flex;gap:10px;align-items:center;z-index:2}
+header a{color:#fff;text-decoration:none;font-size:20px}#p canvas{display:block;width:100%;margin:0 0 6px;background:#fff}#m{color:#fff;padding:20px;font:14px system-ui;text-align:center}</style></head>
+<body><header><a href="index.html">→</a><span id="t"></span></header><div id="m">جاري الفتح…</div><div id="p"></div>
+<script type="module">
+import * as pdfjs from "./pdf.min.mjs";
+pdfjs.GlobalWorkerOptions.workerSrc="./pdf.worker.min.mjs";
+const u=new URLSearchParams(location.search),id=u.get("id");document.getElementById("t").textContent=u.get("t")||"";
+try{
+ const doc=await pdfjs.getDocument({url:"/catalogs/"+id+".pdf"}).promise;
+ document.getElementById("m").remove();
+ const box=document.getElementById("p"),W=box.clientWidth,dpr=Math.min(devicePixelRatio||1,2);
+ const first=await doc.getPage(1),v1=first.getViewport({scale:1});
+ const cs=[];for(let i=1;i<=doc.numPages;i++){const c=document.createElement("canvas");c.dataset.i=i;c.style.aspectRatio=v1.width+"/"+v1.height;box.appendChild(c);cs.push(c)}
+ const done=new Set();let chain=Promise.resolve();
+ const draw=i=>{if(done.has(i))return;done.add(i);chain=chain.then(async()=>{const pg=i===1?first:await doc.getPage(i);const vp=pg.getViewport({scale:W*dpr/pg.getViewport({scale:1}).width});const c=cs[i-1];c.width=vp.width;c.height=vp.height;c.style.aspectRatio="";await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise})};
+ draw(1);
+ const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&draw(+e.target.dataset.i)),{rootMargin:"1500px 0px"});cs.forEach(c=>io.observe(c));
+}catch(e){document.getElementById("m").textContent="هذا الكتالوج لم يُحفظ بعد. افتح التطبيق مع الإنترنت ليتم تنزيله."}
+</script></body></html>
