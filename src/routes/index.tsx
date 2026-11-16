@@ -7,6 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { FileText, Search, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { OfflineDownload } from "@/components/OfflineDownload";
 import { CatalogViewer } from "@/components/CatalogViewer";
 import { getCatalog, listCatalogs, searchCatalogs } from "@/lib/catalog.functions";
 import { getRecent, prefetchCatalog } from "@/lib/pdf-cache";
@@ -119,6 +120,7 @@ function Index() {
     return () => clearTimeout(t);
   }, [q, search]);
 
+  const allIds = useMemo(() => data.catalogs.map((c) => c.id), [data.catalogs]);
   const results = useMemo(() => {
     let list = data.catalogs;
     const brand = BRANDS.find((b) => b.name === cat);
@@ -151,6 +153,7 @@ function Index() {
           مكتبة <span className="text-[#e85d3a]">الكتالوجات</span>
         </h1>
         <p className="mt-2 text-muted-foreground">ابحث عن كتالوج المنتج</p>
+        <div className="mt-3"><OfflineDownload ids={allIds} /></div>
       </header>
 
       <div className="relative mx-auto mb-5 max-w-2xl">
