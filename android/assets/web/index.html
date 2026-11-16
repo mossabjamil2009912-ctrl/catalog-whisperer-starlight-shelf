@@ -1,0 +1,39 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACTES كتالوجات</title><style>
+body{margin:0;font-family:system-ui,sans-serif;background:#f4f6fa;color:#1e2a3a}
+header{position:sticky;top:0;background:#1e3a5f;color:#fff;padding:12px 14px;z-index:2}
+h1{font-size:17px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+h1 button{background:#fff2;color:#fff;border:0;border-radius:8px;padding:6px 10px;font-size:12px}
+input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:0;font-size:15px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 12px}
+.chip{flex:none;padding:6px 12px;border-radius:20px;background:#fff;border:1px solid #d5dce6;font-size:13px}
+.chip.on{background:#1e3a5f;color:#fff;border-color:#1e3a5f}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:0 12px 80px}
+.card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px #0001;text-decoration:none;color:inherit}
+.card img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#e8edf3;display:block}
+.card div{padding:8px;font-size:13px;line-height:1.4}
+.note{margin:10px 12px;padding:10px;border-radius:10px;background:#fff3cd;font-size:13px}
+.miss{opacity:.45}
+</style></head><body>
+<header><h1>ACTES كتالوجات <span><button id="on">العودة للإنترنت</button> <button id="up">تحديث</button></span></h1>
+<input id="q" placeholder="ابحث عن كتالوج…"></header>
+<div class="note">أنت الآن بدون إنترنت. كل الكاتلوجات المحفوظة تفتح عادي. المساعد يحتاج إنترنت.</div>
+<div class="chips" id="chips"></div><div class="grid" id="g"></div>
+<script>
+const B=["الكل","Suntech","Li Power","Deye","Solis","Pylontech","HiTHIUM","User Manual"];let cat="الكل",D={catalogs:[],categories:[]};
+const A=window.Android;
+document.getElementById("up").onclick=()=>A&&A.update();
+document.getElementById("on").onclick=()=>A&&A.goOnline();
+fetch("/data.json").then(r=>r.json()).then(d=>{D=d;draw()}).catch(()=>{document.getElementById("g").innerHTML='<p style="padding:12px">افتح التطبيق مرة واحدة مع الإنترنت لتجهيز الكاتلوجات.</p>'});
+document.getElementById("q").oninput=draw;
+function draw(){
+ const ch=document.getElementById("chips");ch.innerHTML="";
+ B.forEach(b=>{const e=document.createElement("button");e.className="chip"+(b===cat?" on":"");e.textContent=b;e.onclick=()=>{cat=b;draw()};ch.appendChild(e)});
+ const q=document.getElementById("q").value.trim().toLowerCase();
+ const man=(D.categories.find(c=>c.name==="User Manual")||{}).id;
+ const list=D.catalogs.filter(c=>{const t=(c.title+" "+c.keywords+" "+c.description).toLowerCase();
+  if(cat==="User Manual"){if(c.category_id!==man)return false}else if(cat!=="الكل"&&!t.includes(cat.toLowerCase()))return false;
+  return !q||q.split(/\s+/).every(w=>t.includes(w))});
+ document.getElementById("g").innerHTML=list.map(c=>`<a class="card ${A&&!A.has(c.id)?"miss":""}" href="viewer.html?id=${c.id}&t=${encodeURIComponent(c.title)}"><img loading="lazy" src="/catalogs/${c.id}.jpg"><div>${c.title}</div></a>`).join("");
+}
+</script></body></html>
