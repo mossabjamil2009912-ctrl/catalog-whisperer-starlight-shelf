@@ -16,6 +16,7 @@ import { Route as ApiPublicAssistantRouteImport } from './routes/api/public/assi
 import { Route as ApiPublicAssistantStreamRouteImport } from './routes/api/public/assistant-stream'
 import { Route as ApiPublicSpeakRouteImport } from './routes/api/public/speak'
 import { Route as ApiPublicTranscribeRouteImport } from './routes/api/public/transcribe'
+import { Route as ApiPublicFileIdRouteImport } from './routes/api/public/file/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -53,6 +54,11 @@ const ApiPublicTranscribeRoute = ApiPublicTranscribeRouteImport.update({
   path: '/api/public/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicFileIdRoute = ApiPublicFileIdRouteImport.update({
+  id: '/api/public/file/$id',
+  path: '/api/public/file/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/api/public/assistant-stream': typeof ApiPublicAssistantStreamRoute
   '/api/public/speak': typeof ApiPublicSpeakRoute
   '/api/public/transcribe': typeof ApiPublicTranscribeRoute
+  '/api/public/file/$id': typeof ApiPublicFileIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/api/public/assistant-stream': typeof ApiPublicAssistantStreamRoute
   '/api/public/speak': typeof ApiPublicSpeakRoute
   '/api/public/transcribe': typeof ApiPublicTranscribeRoute
+  '/api/public/file/$id': typeof ApiPublicFileIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/api/public/assistant-stream': typeof ApiPublicAssistantStreamRoute
   '/api/public/speak': typeof ApiPublicSpeakRoute
   '/api/public/transcribe': typeof ApiPublicTranscribeRoute
+  '/api/public/file/$id': typeof ApiPublicFileIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
     | '/api/public/assistant-stream'
     | '/api/public/speak'
     | '/api/public/transcribe'
+    | '/api/public/file/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/api/public/assistant-stream'
     | '/api/public/speak'
     | '/api/public/transcribe'
+    | '/api/public/file/$id'
   id:
     | '__root__'
     | '/'
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
     | '/api/public/assistant-stream'
     | '/api/public/speak'
     | '/api/public/transcribe'
+    | '/api/public/file/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -120,6 +132,7 @@ export interface RootRouteChildren {
   ApiPublicAssistantStreamRoute: typeof ApiPublicAssistantStreamRoute
   ApiPublicSpeakRoute: typeof ApiPublicSpeakRoute
   ApiPublicTranscribeRoute: typeof ApiPublicTranscribeRoute
+  ApiPublicFileIdRoute: typeof ApiPublicFileIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTranscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/file/$id': {
+      id: '/api/public/file/$id'
+      path: '/api/public/file/$id'
+      fullPath: '/api/public/file/$id'
+      preLoaderRoute: typeof ApiPublicFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -184,6 +204,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicAssistantStreamRoute: ApiPublicAssistantStreamRoute,
   ApiPublicSpeakRoute: ApiPublicSpeakRoute,
   ApiPublicTranscribeRoute: ApiPublicTranscribeRoute,
+  ApiPublicFileIdRoute: ApiPublicFileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
