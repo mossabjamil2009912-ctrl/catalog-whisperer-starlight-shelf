@@ -16,6 +16,7 @@ import { Route as ApiPublicAssistantRouteImport } from './routes/api/public/assi
 import { Route as ApiPublicAssistantStreamRouteImport } from './routes/api/public/assistant-stream'
 import { Route as ApiPublicSpeakRouteImport } from './routes/api/public/speak'
 import { Route as ApiPublicTranscribeRouteImport } from './routes/api/public/transcribe'
+import { Route as ApiPublicDownloadNameRouteImport } from './routes/api/public/download/$name'
 import { Route as ApiPublicFileIdRouteImport } from './routes/api/public/file/$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -54,6 +55,11 @@ const ApiPublicTranscribeRoute = ApiPublicTranscribeRouteImport.update({
   path: '/api/public/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDownloadNameRoute = ApiPublicDownloadNameRouteImport.update({
+  id: '/api/public/download/$name',
+  path: '/api/public/download/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicFileIdRoute = ApiPublicFileIdRouteImport.update({
   id: '/api/public/file/$id',
   path: '/api/public/file/$id',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/api/public/assistant-stream': typeof ApiPublicAssistantStreamRoute
   '/api/public/speak': typeof ApiPublicSpeakRoute
   '/api/public/transcribe': typeof ApiPublicTranscribeRoute
+  '/api/public/download/$name': typeof ApiPublicDownloadNameRoute
   '/api/public/file/$id': typeof ApiPublicFileIdRoute
 }
 export interface FileRoutesByTo {
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/api/public/assistant-stream': typeof ApiPublicAssistantStreamRoute
   '/api/public/speak': typeof ApiPublicSpeakRoute
   '/api/public/transcribe': typeof ApiPublicTranscribeRoute
+  '/api/public/download/$name': typeof ApiPublicDownloadNameRoute
   '/api/public/file/$id': typeof ApiPublicFileIdRoute
 }
 export interface FileRoutesById {
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/api/public/assistant-stream': typeof ApiPublicAssistantStreamRoute
   '/api/public/speak': typeof ApiPublicSpeakRoute
   '/api/public/transcribe': typeof ApiPublicTranscribeRoute
+  '/api/public/download/$name': typeof ApiPublicDownloadNameRoute
   '/api/public/file/$id': typeof ApiPublicFileIdRoute
 }
 export interface FileRouteTypes {
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/api/public/assistant-stream'
     | '/api/public/speak'
     | '/api/public/transcribe'
+    | '/api/public/download/$name'
     | '/api/public/file/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/api/public/assistant-stream'
     | '/api/public/speak'
     | '/api/public/transcribe'
+    | '/api/public/download/$name'
     | '/api/public/file/$id'
   id:
     | '__root__'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/api/public/assistant-stream'
     | '/api/public/speak'
     | '/api/public/transcribe'
+    | '/api/public/download/$name'
     | '/api/public/file/$id'
   fileRoutesById: FileRoutesById
 }
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   ApiPublicAssistantStreamRoute: typeof ApiPublicAssistantStreamRoute
   ApiPublicSpeakRoute: typeof ApiPublicSpeakRoute
   ApiPublicTranscribeRoute: typeof ApiPublicTranscribeRoute
+  ApiPublicDownloadNameRoute: typeof ApiPublicDownloadNameRoute
   ApiPublicFileIdRoute: typeof ApiPublicFileIdRoute
 }
 
@@ -186,6 +199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTranscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/download/$name': {
+      id: '/api/public/download/$name'
+      path: '/api/public/download/$name'
+      fullPath: '/api/public/download/$name'
+      preLoaderRoute: typeof ApiPublicDownloadNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/file/$id': {
       id: '/api/public/file/$id'
       path: '/api/public/file/$id'
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicAssistantStreamRoute: ApiPublicAssistantStreamRoute,
   ApiPublicSpeakRoute: ApiPublicSpeakRoute,
   ApiPublicTranscribeRoute: ApiPublicTranscribeRoute,
+  ApiPublicDownloadNameRoute: ApiPublicDownloadNameRoute,
   ApiPublicFileIdRoute: ApiPublicFileIdRoute,
 }
 export const routeTree = rootRouteImport
