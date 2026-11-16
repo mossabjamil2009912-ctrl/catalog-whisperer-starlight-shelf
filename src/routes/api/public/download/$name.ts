@@ -12,7 +12,7 @@ export const Route = createFileRoute("/api/public/download/$name")({
       GET: async ({ params }) => {
         const entry = FILES[String(params.name)];
         if (!entry) return new Response("not found", { status: 404 });
-        const base = process.env.SUPABASE_URL;
+        const base = process.env["SUPABASE_URL"];
         const upstream = await fetch(`${base}/storage/v1/object/public/downloads/${entry.file}`);
         if (!upstream.ok || !upstream.body) return new Response("unavailable", { status: 502 });
         const headers = new Headers({
